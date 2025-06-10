@@ -3,22 +3,19 @@ import { useRef, useState } from 'react';
 import { View, FlatList } from 'react-native';
 import { ListItem } from '@/components/ListItem';
 import { AddButton } from './AddButton';
-
-type Item = {
-  id: number;
-  text: string;
-};
+import mergeItems from '@/utils/mergeItems';
+import { ListItemType } from '@/constants/Types';
 
 export default function ListView() {
-  const [items, setItems] = useState<Item[]>([
-    { id: 1, text: 'Buy groceries' },
-    { id: 2, text: 'Do laundry' },
-    { id: 3, text: 'Read a book' },
+  const [items, setItems] = useState<ListItemType[]>([
+    { id: 1, item: 'Buy groceries', quantity: 3 },
+    { id: 2, item: 'Do laundry', quantity: 2 },
+    { id: 3, item: 'Read a book', quantity: 1 },
   ]);
 
   const [checkedItems, setCheckedItems] = useState<number[]>([]);
 
-  const flatListRef = useRef<FlatList<Item>>(null);
+  const flatListRef = useRef<FlatList<ListItemType>>(null);
   function toggleItem(id: number) {
     setCheckedItems((prev) =>
       prev.includes(id) ? prev.filter((itemId) => itemId !== id) : [...prev, id]
@@ -26,15 +23,15 @@ export default function ListView() {
   }
 
   function addItem() {
-    const newId = items.length > 0 ? Math.max(...items.map((item) => item.id)) + 1 : 1;
+    const newId = Date.now()
     setItems((prev) => {
-      const newItems = [...prev, { id: newId, text: `New item ${newId}` }];
+      const newItems = [...prev, { id: newId, item: `New item ${newId}`, quantity: 3 }];
 
       requestAnimationFrame(() => {
         flatListRef.current?.scrollToEnd({ animated: true });
       });
 
-      return newItems;
+      return mergeItems(newItems);
     });
   }
 
@@ -49,7 +46,7 @@ export default function ListView() {
           renderItem={({ item, index }) => (
             <ListItem
               number={index + 1}
-              text={item.text}
+              text={item.item}
               checked={checkedItems.includes(item.id)}
               onPress={() => toggleItem(item.id)}
             />

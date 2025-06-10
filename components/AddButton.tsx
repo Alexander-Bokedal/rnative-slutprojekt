@@ -16,12 +16,12 @@ export function AddButton({ onPress }: AddButtonProps) {
       style={({ pressed }) => [
         styles.button,
         {
-          backgroundColor: colors.tint,
+          backgroundColor: colors.cardBackground,
           opacity: pressed ? 0.7 : 1,
         },
       ]}
     >
-      <Text style={styles.plus}>+</Text>
+      <Text style={[styles.plus, { color: colors.text }]}>+</Text>
     </Pressable>
   );
 }
@@ -44,7 +44,6 @@ const styles = StyleSheet.create({
   },
   plus: {
     fontSize: 32,
-    color: '#fff',
     lineHeight: 36,
   },
 });
