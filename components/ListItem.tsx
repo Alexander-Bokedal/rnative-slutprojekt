@@ -15,6 +15,7 @@ export function ListItem({ number, text, checked, onPress }: ListItemProps) {
   const colors = Colors[colorScheme ?? 'light'];
 
   return (
+
     <Pressable
       onPress={onPress}
       style={({ pressed }) => [
