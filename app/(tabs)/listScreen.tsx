@@ -1,16 +1,11 @@
 
-import { View, Platform, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import ListView from '@/components/ListView';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
 export default function HomeScreen() {
 
-  const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? 'light'];
 
   return (
     <View style={styles.container}>
-      <Text style={{ color: colors.text }}> Hello world </Text>
       <ListView />
     </View>
   );

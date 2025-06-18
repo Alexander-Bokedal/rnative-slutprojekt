@@ -1,60 +1,92 @@
 
 import { useRef, useState } from 'react';
-import { View, FlatList } from 'react-native';
+import { View, FlatList, Text } from 'react-native';
 import { ListItem } from '@/components/ListItem';
 import { AddButton } from './AddButton';
 import mergeItems from '@/utils/mergeItems';
+import { AddItemModal } from './AddItemModal';
 import { ListItemType } from '@/constants/Types';
-
+import uuid from 'react-native-uuid'
+import { RemoveButton } from './ClearButton';
+import useRecipeStore from '@/stores/recipeStore';
+import { RecipeListItem } from './RecipeListItem';
+import { useColorScheme } from 'react-native';
+import { Colors } from '@/constants/Colors';
 export default function ListView() {
-  const [items, setItems] = useState<ListItemType[]>([
-    { id: 1, item: 'Buy groceries', quantity: 3 },
-    { id: 2, item: 'Do laundry', quantity: 2 },
-    { id: 3, item: 'Read a book', quantity: 1 },
-  ]);
 
-  const [checkedItems, setCheckedItems] = useState<number[]>([]);
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme ?? 'light'];
+  const [items, setItems] = useState<ListItemType[]>([
+  ]);
+  const recipes = useRecipeStore((state) => state.recipes)
+  const [modalVisible, setModalVisible] = useState(false)
+  const [checkedItems, setCheckedItems] = useState<string[]>([]);
 
   const flatListRef = useRef<FlatList<ListItemType>>(null);
-  function toggleItem(id: number) {
+  function toggleItem(id: string) {
     setCheckedItems((prev) =>
       prev.includes(id) ? prev.filter((itemId) => itemId !== id) : [...prev, id]
     );
   }
-
-  function addItem() {
-    const newId = Date.now()
-    setItems((prev) => {
-      const newItems = [...prev, { id: newId, item: `New item ${newId}`, quantity: 3 }];
-
-      requestAnimationFrame(() => {
-        flatListRef.current?.scrollToEnd({ animated: true });
-      });
-
-      return mergeItems(newItems);
-    });
-  }
+  const deleteItem = (id: string) => {
+    setItems(prev => prev.filter(item => item.id !== id));
+    setCheckedItems(prev => prev.filter(cid => cid !== id));
+  };
 
   return (
-    <View style={{ borderWidth: 5, width: '100%', maxHeight: '100%', flex: 1, padding: 16 }}>
+    <View style={{ width: '100%', maxHeight: '100%', flex: 1, padding: 1 }}>
 
-      <View style={{ maxHeight: '90%' }}>
-        <FlatList
-          ref={flatListRef}
-          data={items}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item, index }) => (
-            <ListItem
-              number={index + 1}
-              text={item.item}
-              checked={checkedItems.includes(item.id)}
-              onPress={() => toggleItem(item.id)}
-            />
-          )}
+      <View style={{ flex: 2, flexDirection: 'row', justifyContent: 'space-evenly' }}>
+        <View style={{ maxHeight: '90%', flex: 2, borderRightWidth: 2, borderColor: colors.tint, padding: 16, }}>
 
-        />
+          <Text style={{ borderBottomWidth: 2, marginBottom: 10, color: colors.text, fontSize: 18, textAlign: 'center', padding: 6 }}> Shopping List </Text>
+          <FlatList
+            ref={flatListRef}
+            data={items}
+            keyExtractor={item => item.id}
+            renderItem={({ item }) => (
+              <ListItem
+                quantity={item.quantity}
+                text={item.item}
+                checked={checkedItems.includes(item.id)}
+                onPress={() => toggleItem(item.id)}
+                onDelete={() => deleteItem(item.id)}
+              />
+            )}
+          />
+        </View>
+        <View style={{ maxHeight: '90%', flex: 1, borderRightWidth: 2, padding: 16, }}>
+          <Text style={{ borderBottomWidth: 2, marginBottom: 10, color: colors.text, fontSize: 18, textAlign: 'center', padding: 6 }}> Recipes </Text>
+          <FlatList
+            data={recipes}
+            keyExtractor={(item) => item.name}
+            renderItem={(item) => (
+              <RecipeListItem text={item.item.name} onPress={() => {
+                const newItem = item.item.ingredients
+                setItems((prev) => mergeItems([...prev, ...newItem]));
+              }} />
+
+
+            )} />
+
+        </View>
       </View>
-      <AddButton onPress={addItem} />
+
+      <AddButton onPress={() => setModalVisible(true)} />
+      <RemoveButton onPress={() => { setItems([]) }} />
+      <AddItemModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onSubmit={(item, quantity) => {
+          const newId = uuid.v4()
+          const newItem = { id: newId, item, quantity };
+          setItems((prev) => mergeItems([...prev, newItem]));
+
+          requestAnimationFrame(() => {
+            flatListRef.current?.scrollToEnd({ animated: true });
+          });
+        }}
+      />
     </View>
 
   );

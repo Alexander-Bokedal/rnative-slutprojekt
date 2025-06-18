@@ -1,16 +1,17 @@
 import React from 'react';
-import { Pressable, Text, StyleSheet } from 'react-native';
+import { View, Pressable, Text, StyleSheet } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 type ListItemProps = {
-  number: number;
+  quantity: number,
   text: string;
-  checked: boolean;
-  onPress: () => void;
+  checked?: boolean;
+  onPress?: () => void;
+  onDelete?: () => void;
 };
 
-export function ListItem({ number, text, checked, onPress }: ListItemProps) {
+export function ListItem({ quantity, onDelete, text, checked, onPress }: ListItemProps) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
@@ -27,21 +28,31 @@ export function ListItem({ number, text, checked, onPress }: ListItemProps) {
         },
       ]}
     >
-      <Text style={[styles.number, { color: colors.text }]}>{number}.</Text>
-      <Text
-        style={[
-          styles.text,
-          { color: colors.text, textDecorationLine: checked ? 'line-through' : 'none' },
-        ]}
-      >
-        {text}
-      </Text>
+
+      <View>
+        <Text
+          style={[
+            styles.text,
+            { color: colors.text, textDecorationLine: checked ? 'line-through' : 'none' },
+          ]}
+        >
+          {quantity}
+          st
+          {' '}
+          {text}
+        </Text>
+      </View>
+      <Pressable onPress={onDelete} style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}>
+        <Text style={{ alignSelf: 'flex-end', color: 'red', fontSize: 18 }}>×</Text>
+      </Pressable>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    justifyContent: 'space-between',
     flexDirection: 'row',
     alignItems: 'center',
     padding: 12,

@@ -20,7 +20,6 @@ export default function TabLayout() {
         tabBarBackground: TabBarBackground,
         tabBarStyle: Platform.select({
           ios: {
-            // Use a transparent background on iOS to show the blur effect
             position: 'absolute',
           },
           default: {},
@@ -29,6 +28,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
+          headerShown: false,
           title: 'Home',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
         }}
@@ -37,6 +37,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="listScreen"
         options={{
+
+          headerShown: false,
           title: 'List',
           tabBarIcon: ({ color }) => <IconSymbol name="list.bullet" size={32} color={color} />
           ,
@@ -45,6 +47,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="recipes"
         options={{
+
+          headerShown: false,
           title: 'Recipes',
           tabBarIcon: ({ color }) => <IconSymbol name="fork.knife" size={32} color={color} />
           ,
