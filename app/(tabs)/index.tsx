@@ -2,7 +2,7 @@ import React from 'react';
 import { SafeAreaView, View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-
+import useUserState from '@/stores/userStore';
 type Props = {
   onContinue: () => void;
 };
@@ -10,7 +10,6 @@ type Props = {
 export default function LandingScreen({ onContinue }: Props) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
-
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
 

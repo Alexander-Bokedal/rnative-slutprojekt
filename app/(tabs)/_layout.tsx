@@ -1,16 +1,21 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
-import { Platform } from 'react-native';
+import { router, Tabs } from 'expo-router';
+import React, { useEffect } from 'react';
+import { Platform, Text, TouchableOpacity } from 'react-native';
 
 import { HapticTab } from '@/components/HapticTab';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-
+import useUserState from '@/stores/userStore';
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const user = useUserState((state) => state.user)
 
+  const toggleLogin = useUserState((state) => state.toggleLogin)
+  useEffect(() => {
+    if (!user) router.replace('/(auth)')
+  })
   return (
     <Tabs
       screenOptions={{
@@ -28,8 +33,13 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          headerShown: false,
-          title: 'Home',
+          headerShown: true,
+          title: '',
+          headerRight: () => (
+            <TouchableOpacity style={{ marginRight: 16 }} onPressIn={() => toggleLogin()}>
+              <Text style={{ color: 'red' }}>Logout</Text>
+            </TouchableOpacity>
+          ),
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
         }}
       />

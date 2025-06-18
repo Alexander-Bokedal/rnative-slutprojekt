@@ -1,14 +1,20 @@
 //
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View, StyleSheet, } from 'react-native';
-import { useRouter } from 'expo-router';
+import useUserState from '@/stores/userStore';
+import { router } from 'expo-router';
 function Index() {
-  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-
-
+  const toggleLogin = useUserState((state) => state.toggleLogin)
+  const user = useUserState((state) => state.user)
+  useEffect(() => {
+    console.log(user)
+  })
+  const handleLogin = () => {
+    toggleLogin()
+    router.replace('/(tabs)')
+  }
 
 
   return (
@@ -33,7 +39,7 @@ function Index() {
       <View style={{ justifyContent: 'center', flexDirection: 'row', maxWidth: '90%', }}>
 
       </View>
-      <TouchableOpacity style={styles.button} onPress={() => router.replace('/(tabs)')} >
+      <TouchableOpacity style={styles.button} onPress={handleLogin} >
         <Text style={styles.buttonText}>Sign In</Text>
       </TouchableOpacity>
 
